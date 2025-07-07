@@ -14,10 +14,9 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
-            'email' => 'required|string|email|max:100|unique:users',
-            'phone' => 'required|string|max:13',
+            'email' => 'required|string|email|max:200|unique:users',
+            'phone' => 'required|string|max:15',
             'password' => 'required|string|min:6|confirmed',
-            // Hapus 'role' dari request langsung, tetapkan default jika hanya nasabah yang boleh mendaftar
         ]);
 
         if ($validator->fails()) {
@@ -36,14 +35,18 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'role' => 'nasabah', // hardcode jika hanya nasabah yang bisa register
+            'role' => 'nasabah',
+            'deposit_balance' => 0,
         ]);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json(
             [
-                'status' => true,
                 'message' => 'Registrasi berhasil',
                 'user' => $user,
+                'access_token' => $token,
+                'token_type' => 'Bearer',
             ],
             201,
         );
@@ -51,48 +54,41 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(
-                [
-                    'status' => false,
-                    'message' => 'Validasi gagal',
-                    'errors' => $validator->errors(),
-                ],
-                422,
-            );
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([
+                'message' => 'Kredensial tidak valid',
+            ], 401);
         }
 
-        $credentials = $request->only('email', 'password');
+        $user = Auth::user();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            return response()->json(
-                [
-                    'status' => true,
-                    'message' => 'Login berhasil',
-                    'user' => [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'phone' => $user->phone,
-                        'role' => $user->role,
-                    ],
-                ],
-                200,
-            );
-        }
+        return response()->json([
+            'message' => 'Login berhasil',
+            'user' => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
+    }
 
-        return response()->json(
-            [
-                'status' => false,
-                'message' => 'Email atau password salah',
-            ],
-            401,
-        );
+    public function user(Request $request)
+    {
+        return response()->json([
+            'user' => $request->user(),
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Logout berhasil',
+        ]);
     }
 }
