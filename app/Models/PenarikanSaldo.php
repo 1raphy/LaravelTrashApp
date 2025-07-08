@@ -17,8 +17,16 @@ class PenarikanSaldo extends Model
     ];
 
     protected $casts = [
-        'jumlah' => 'decimal:2',
+        'id' => 'integer',
+        'user_id' => 'integer',
+        'jumlah' => 'float',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
+
+    // protected $casts = [
+    //     'jumlah' => 'decimal:2',
+    // ];
 
     public function user()
     {

@@ -2,37 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use Log;
 use Illuminate\Http\Request;
 use App\Models\PenarikanSaldo;
 use Illuminate\Support\Facades\Auth;
 
 class PenarikanSaldoController extends Controller
 {
+    public function index(Request $request)
+    {
+        // Debug untuk memastikan metode index dijalankan
+        \Log::info('PenarikanSaldoController@index called', ['request' => $request->all()]);
+
+        // Ambil user_id dari pengguna yang terautentikasi
+        $userId = $request->user()->id; // Asumsi autentikasi Sanctum
+        $penarikans = PenarikanSaldo::where('user_id', $userId)
+                    ->with(['user'])
+                    ->get();
+
+        // Kembalikan response JSON tanpa validasi
+        return response()->json($penarikans);
+        // Atau: return response()->json(['data' => $penarikans]);
+    }
+
     public function store(Request $request)
     {
-        $request->validate([
-            'jumlah' => 'required|numeric|min:10000'
+        // Debug untuk memastikan metode store tidak dijalankan untuk GET
+        Log::info('PenarikanSaldoController@store called', ['request' => $request->all()]);
+
+        // Validasi hanya untuk POST
+        $validated = $request->validate([
+            'jumlah' => 'required|numeric|min:0',
+            'user_id' => 'required|integer|exists:users,id',
         ]);
 
-        $user = Auth::user();
-        
-        if ($user->deposit_balance < $request->jumlah) {
-            return response()->json([
-                'message' => 'Saldo tidak cukup'
-            ], 400);
-        }
-
-        $penarikan = PenarikanSaldo::create([
-            'user_id' => Auth::id(),
-            'jumlah' => $request->jumlah
-        ]);
-
-        $user->deposit_balance -= $request->jumlah;
-        $user->save();
-
-        return response()->json([
-            'message' => 'Penarikan saldo berhasil diajukan',
-            'data' => $penarikan
-        ], 201);
+        $penarikan = PenarikanSaldo::create($validated);
+        return response()->json(['data' => $penarikan], 201);
     }
 }

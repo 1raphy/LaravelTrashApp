@@ -19,7 +19,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/setoran-sampah/{id}/status', [SetoranSampahController::class, 'updateStatus']);
 
     // Endpoint untuk penarikan saldo
-    Route::post('/penarikan-saldo', [PenarikanSaldoController::class, 'store']);
+    Route::resource('penarikan-saldo', PenarikanSaldoController::class)->only(['index', 'store']);
+    // Route::get('/penarikan-saldo', [PenarikanSaldoController::class, 'index']);
+    // Route::post('/penarikan-saldo', [PenarikanSaldoController::class, 'store']);
 
     // Endpoint untuk mengelola jenis sampah (kecuali index)
     Route::post('/jenis-sampah', [JenisSampahController::class, 'store']);
@@ -29,4 +31,4 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Endpoint publik untuk mendapatkan daftar jenis sampah
-Route::get('/jenis-sampah', [JenisSampahController::class, 'index']);
+Route::get('/jenis-sampah-index', [JenisSampahController::class, 'index']);

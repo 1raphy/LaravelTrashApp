@@ -16,6 +16,9 @@ class SetoranSampah extends Model
         'jenis_sampah_id',
         'berat_kg',
         'total_harga',
+        'metode_penjemputan',
+        'alamat_penjemputan',
+        'catatan_tambahan',
         'status',
     ];
 
