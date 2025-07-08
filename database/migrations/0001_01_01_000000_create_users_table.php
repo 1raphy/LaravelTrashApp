@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('role')->default('nasabah');
-            $table->decimal('deposit_balance', 12, 2)->default(0)->after('role');
+            $table->decimal('deposit_balance', 12, 2)->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

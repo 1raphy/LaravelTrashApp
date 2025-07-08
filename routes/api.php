@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\JenisSampahController;
 use App\Http\Controllers\SetoranSampahController;
 use App\Http\Controllers\PenarikanSaldoController;
@@ -12,6 +13,12 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::put('/users/{id}', [UserController::class, 'update']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    Route::get('/users/{id}/total-setoran', [UserController::class, 'getTotalSetoran']);
 
     // Endpoint untuk mengelola setoran sampah
     Route::get('/setoran-sampah', [SetoranSampahController::class, 'index']);

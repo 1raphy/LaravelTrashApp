@@ -23,9 +23,19 @@ class SetoranSampah extends Model
     ];
 
     protected $casts = [
+        'id' => 'integer',
+        'user_id' => 'integer',
+        'jenis_sampah_id' => 'integer',
         'berat_kg' => 'float',
-        'total_harga' => 'decimal:2',
+        'total_harga' => 'float',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
+
+    // protected $casts = [
+    //     'berat_kg' => 'float',
+    //     'total_harga' => 'decimal:2',
+    // ];
 
     public function user()
     {

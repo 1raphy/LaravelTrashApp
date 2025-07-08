@@ -33,9 +33,17 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'deposit_balance' => 'decimal:2',
+        'id' => 'integer',
+        'deposit_balance' => 'float',
         'email_verified_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
+
+    // protected $casts = [
+    //     'deposit_balance' => 'decimal:2',
+    //     'email_verified_at' => 'datetime',
+    // ];
 
     public function setoranSampah()
     {
